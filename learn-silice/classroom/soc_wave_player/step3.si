@@ -29,14 +29,24 @@ group mem_io
   uint$addrW$ addr(0),    // address, init is boot address
 }
 
-unit sndgen(input uint24 incr_per_cycle, input uint8 amplitude, output uint8 audio){
+unit sndgen(input uint24 incr_per_cycle, input uint8 amplitude, output uint4 audio){
+    uint25 compteur = 0;
+    uint1 croissant = 1;
     always{
-        // audio = audio + 1;
+        if (compteur >=(1<<24) || croissant<0){
+            croissant = 1 - croissant;
+        }
+        if (croissant == 1){
+            compteur = compteur + incr_per_cycle;
+        } else {
+            compteur  = compteur - incr_per_cycle;
+        }
+        audio = compteur[20,4];
         if (amplitude != 0){
-            __display("P: %d A: %d",incr_per_cycle,amplitude);
+            __display("P: %d A: %d audio: %d",incr_per_cycle,amplitude,audio);
         }
     }
-    }
+}
 // --------------------------------------------------
 // SOC unit (main)
 // --------------------------------------------------
@@ -140,8 +150,8 @@ $$end
         ram.wdata        = memio.wdata;
         ram.addr         = memio.addr;
         // TEST sound generator to audio
-        audio_l = sg.audio[4,4];
-        audio_r = sg.audio[4,4];
+        audio_l = sg.audio[0,4];
+        audio_r = sg.audio[0,4];
         // writes CPU => peripherals
         if (peripheral_w) {
         /// LEDs
