@@ -14,8 +14,8 @@
 
 void main()
 {
-    const int inc_per_cycle = (1<<24) / 56818;
-    *SNDGEN = (inc_per_cycle << 8) | 255;
+    const int inc_per_cycle = (1<<24) / 56818;//56818
+    //*SNDGEN = (inc_per_cycle << 8) | 32;
   /*int i=0;
   // get current cycle
   unsigned int last_tm = rdcycle();
@@ -24,21 +24,17 @@ void main()
   int dir    = 1;
   int period = period_min;
   // forever
+  // */
+  int i=0;
   while (1) {
     // write current sample
-    *AUDIO = i;
-    // check elapsed time
-    int elapsed = rdcycle() - last_tm; // NOTE: beware of 2^32 wrap around on rdcycle
-    if (elapsed > period) {
-      // increment sample (sawtooth wave)
-      ++i;
-      // change period progressively
-      if (period >= period_max) { dir = -1; }
-      if (period <= period_min) { dir =  1; }
-      period += dir;
-      // record time
-      last_tm = rdcycle();
+    if (i>255){
+        i=0;
     }
-    }*/
+    *SNDGEN = (inc_per_cycle << 8) | i;
+    pause(50000);
+    i = i+1;
+  }
+
 
 }
