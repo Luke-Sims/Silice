@@ -32,7 +32,7 @@ void main()
         i=0;
     }
     *SNDGEN = (inc_per_cycle << 8) | i;
-    pause(50000);
+    pause(500000);
     i = i+1;
   }
 

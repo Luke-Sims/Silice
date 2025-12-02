@@ -33,16 +33,17 @@ unit sndgen(input uint24 incr_per_cycle, input uint8 amplitude, output uint8 aud
     uint25 compteur = 0;
     uint1 croissant = 1;
     always{
-        if (compteur >=(1<<24)){
-            croissant = 1 - croissant;
+        uint32 trois = (compteur[0,24] * amplitude) >> 8;
+        audio = trois[16,8];
+        if (compteur > (1<<24)){
+            croissant = 0;
         }
         if (croissant == 1){
             compteur = compteur + incr_per_cycle;
         } else {
-            compteur  = compteur - incr_per_cycle;
+            compteur = 0;
+            croissant = 1;
         }
-        uint32 trois = (amplitude * compteur[0,24]) >> 8;
-        audio = trois[16,8];
         __display("amplitude = %d audio: %d\n",trois[16,8],compteur[16,8]);
         if (amplitude != 0){
             __display("P: %d A: %d audio: %d",incr_per_cycle,amplitude,audio);
