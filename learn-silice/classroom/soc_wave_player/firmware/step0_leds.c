@@ -10,16 +10,16 @@
 
 void main()
 {
-  int leds = 1;
-  int dir  = 0;
-  while (1) {
-    pause(1000000);
-    if (leds == 128 || leds == 1) { dir = 1-dir; }
-    if (dir) {
-      leds = leds << 1;
-    } else {
-      leds = leds >> 1;
+    int leds = 1;
+    int dir  = 0;
+    while (1) {
+        pause(1000000);
+        if (leds == 128 || leds == 1) { dir = 1-dir; }
+        if (dir) {
+            leds = leds << 1;
+        } else {
+            leds = leds >> 1;
+        }
+        *LEDS = leds;
     }
-    *LEDS = leds;
-  }
 }

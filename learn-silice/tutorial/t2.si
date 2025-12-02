@@ -1,18 +1,23 @@
 // create a unit producing a 'rotating' bit pattern
-unit rotate(output uint8 o)
+unit rotate(output! uint8 o)
 {
   uint8 bits(8b1);
   always {
+    uint32 cycle(0); // count cycles
     o    = bits;
+    __display("[%d] o:%b",cycle,o); // print cycle and o
     bits = {bits[0,1],bits[1,7]};
+    cycle = cycle + 1;
   }
 }
 // main unit
 unit main(output uint8 leds)
 {
+  uint32 cycle(0); // count cycles
   rotate r; // instantiate the unit
   always {
+    __display("[%d] r.o:%b",cycle, r.o); // print cycle and r.o
     leds = r.o;  // assign the output to leds
-    __display("leds:%b",leds); // print leds
+    cycle = cycle + 1; // increment cycle counter
   }
 }

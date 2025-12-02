@@ -14,7 +14,9 @@
 
 void main()
 {
-  int i=0;
+    const int inc_per_cycle = (1<<24) / 56818;
+    *SNDGEN = (inc_per_cycle << 8) | 255;
+  /*int i=0;
   // get current cycle
   unsigned int last_tm = rdcycle();
   const int period_min = 3125;
@@ -37,6 +39,6 @@ void main()
       // record time
       last_tm = rdcycle();
     }
-  }
+    }*/
 
 }

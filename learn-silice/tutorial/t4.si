@@ -1,4 +1,4 @@
-unit eq(input uint8 i,output uint8 o)
+unit eq(input uint8 i,output uint8 o(111))
 {
   always {
     o     = i;

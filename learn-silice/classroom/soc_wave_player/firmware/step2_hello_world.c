@@ -19,6 +19,6 @@ void main()
   // print message
   display_set_cursor(0,0);
   display_set_front_back_color(255,0);
-  printf("Hello world!\n");
+  printf("          \n  |\   \\\\__     o \n  | \_/    o \    o \n  > _   (( <_  oo   \n  | / \__+___/      \n  |/     |/         \n                    \n\n");
   display_refresh();
 }
