@@ -38,7 +38,7 @@ void main()
   }
   printf("done.\n");
   // open the image file
-  FL_FILE *f = fl_fopen("/img.raw","rb");
+  FL_FILE *f = fl_fopen("/adulthair_meme.raw","rb");
   if (f == NULL) {
     printf("img.raw not found.\n");
     display_refresh();
