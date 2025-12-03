@@ -15,18 +15,8 @@
 void main()
 {
     const int inc_per_cycle = (1<<24) / 56818;//56818
-    //*SNDGEN = (inc_per_cycle << 8) | 32;
-  /*int i=0;
-  // get current cycle
-  unsigned int last_tm = rdcycle();
-  const int period_min = 3125;
-  const int period_max = 3125 * 6;
-  int dir    = 1;
-  int period = period_min;
-  // forever
-  // */
-  int i=0;
-  while (1) {
+    int i=0;
+    while (1) {
     // write current sample
     if (i>255){
         i=0;
@@ -34,7 +24,7 @@ void main()
     *SNDGEN = (inc_per_cycle << 8) | i;
     pause(500000);
     i = i+1;
-  }
+    }
 
 
 }

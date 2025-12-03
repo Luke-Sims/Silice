@@ -138,6 +138,7 @@ $$end
         uint1 display_direct_access  = prev_mem_addr[ 1,1];
         uint1 display_reset_access   = prev_mem_addr[ 2,1];
         uint1 sd_access              = prev_mem_addr[ 5,1];
+        uint1 button_access          = prev_mem_addr[ 6,1];
         uint1 sndgen_access          = prev_mem_addr[ 7,1];
     	  // ---- memory access CPU <-> BRAM (reads and writes)
         // reads  RAM, peripherals => CPU
@@ -150,6 +151,7 @@ $$end
         (~peripheral_r                  ? ram.rdata          : 32b0)
         // CPU reading from peripherals
         | ((peripheral_r & sd_access)     ? {31b0,    sd_miso} : 32b0)
+        | ((peripheral_r & button_access)     ? btns : 32b0)
         ;
         // writes CPU => RAM
         ram.wenable = memio.wenable & {4{~memio.addr[$periph_bit$,1]}};
