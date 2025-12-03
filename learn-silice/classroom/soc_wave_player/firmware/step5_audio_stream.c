@@ -53,7 +53,9 @@ void main()
   }
   printf("done.\n");
   display_refresh();
-
+  display_set_cursor(0,0);
+  display_set_front_back_color(0,255);
+  printf("    ===== files =====    \n\n");
   // playing the track
   // -> open the file
   FL_FILE *f = fl_fopen("/music.raw","rb");
