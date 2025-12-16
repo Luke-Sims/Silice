@@ -27,6 +27,18 @@ void clear_audio()
   }
 }
 
+#define N_ITEMS 5
+
+  const char *items[N_ITEMS] = {
+    "the sound of silence",
+    "sunday bloody sunday",
+    "envole-moi",
+    "boys don't cry",
+    "blouson noir",
+  };
+#ifndef HWFBUFFER
+#error This firmware needs HWFBUFFER defined
+#endif
 void main()
 {
     // install putchar handler for printf
@@ -75,6 +87,7 @@ void main()
         fl_fread(display_framebuffer(),1,128*128,f2);
         // refresh display to show the image
         display_refresh();
+        fl_fclose(f2);
         display_set_front_back_color(0,255);
         //printf("music file found.\n");
         display_refresh();
@@ -83,16 +96,30 @@ void main()
         display_refresh();
         int leds = 1;
         int dir  = 0;
+        // Pause option
         int pause = 0;
-        int button = 0;
+        int button_pause = 0;
+        // Menu option
+        int selected = 0;
+        // int i=255;
         // plays the entire file
         while (1) {
             // tackle button press
-            int prev_button = button;
-            button = *BUTTONS & (1<<3);
-            int diff_button = button && !prev_button;
+            int prev_button = button_pause;
+            button_pause = *BUTTONS & (1<<2);
+            int diff_button = button_pause && !prev_button;
+            display_set_cursor(0,0);
+            for (int i = 0; i < N_ITEMS; ++i) {
+                if (i == selected) { // highlight selected
+                    display_set_front_back_color(0,255);
+                } else {
+                    display_set_front_back_color(255,0);
+                }
+                printf("%d> %s\n",i,items[i]);
+            }
+            display_refresh();
             // read directly in hardware buffer
-            if(pause){
+            if(!pause){
                 int *addr = (int*)(*AUDIO);
                 // (use 512 bytes reads to avoid extra copies inside fat_io_lib)
                 int sz = fl_fread(addr,1,512,f);
@@ -103,6 +130,7 @@ void main()
                 clear_audio();
                 display_set_cursor(0,50);
                 printf("pause");
+
                 display_refresh();
             }
             // light show!
@@ -111,11 +139,33 @@ void main()
             *LEDS = leds;
             if (diff_button) {
                 pause = !pause;
+                f2 = fl_fopen("/adulthair_meme.raw","rb");
+                fl_fread(display_framebuffer(),1,128*128,f2);
+                display_refresh();
+                fl_fclose(f2);
+            }
+            if (*BUTTONS & (1<<3)) {
+                ++ selected;
+            }
+            if (*BUTTONS & (1<<4)) {
+                -- selected;
+            }
+            /*if (*BUTTONS & (1<<5)) {
+                i = i-(i>>3);
+            }
+            if (*BUTTONS & (1<<6)) {
+                i = i+(i>>3) >= 255 ? 255:i+(i>>3);
+                }*/
+            // wrap around
+            if (selected < 0) {
+                selected = N_ITEMS - 1;
+            }
+            if (selected >= N_ITEMS) {
+                selected = 0;
             }
     }
     // close
     fl_fclose(f);
-    fl_fclose(f2);
   }
 
 }
