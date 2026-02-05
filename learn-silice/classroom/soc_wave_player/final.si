@@ -190,7 +190,7 @@ $$end
     uint1 display_reset_access   = prev_mem_addr[ 2,1];
     uint1 sd_access              = prev_mem_addr[ 5,1];
     uint1 button_access          = prev_mem_addr[ 6,1];
-    uint1 rgbsel_access          = prev_mem_addr[$perif_bit-3$,1];
+    uint1 rgbsel_access          = prev_mem_addr[$periph_bit-3$,1];
     uint1 framebuffer_access     = prev_mem_addr[$periph_bit-2$,1];
 	  // ---- memory access CPU <-> BRAM (reads and writes)
     // reads  RAM, peripherals => CPU

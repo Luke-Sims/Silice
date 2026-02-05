@@ -50,7 +50,7 @@ void main()
     y += dy;
     if (y > 108) {
       y  = 108;
-      y = -dy;
+      dy = -dy;
     } else if (y < 0) {
       y  = 0;
       dy = -dy;
