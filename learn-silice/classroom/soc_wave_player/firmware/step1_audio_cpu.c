@@ -25,6 +25,30 @@ void main()
     pause(500000);
     i = i+1;
     }
-
-
+  /*
+  int i=0;
+  // get current cycle
+  unsigned int last_tm = rdcycle();
+  const int period_min = 3125;
+  const int period_max = 3125 * 6;
+  int dir    = 1;
+  int period = period_min;
+  // forever
+  while (1) {
+    // write current sample
+    *AUDIO = i;
+    // check elapsed time
+    int elapsed = rdcycle() - last_tm; // NOTE: beware of 2^32 wrap around on rdcycle
+    if (elapsed > period) {
+      // increment sample (triangle wave)
+      ++i;
+      // change period progressively
+      if (period >= period_max) { dir = -1; }
+      if (period <= period_min) { dir =  1; }
+      period += dir;
+      // record time
+      last_tm = rdcycle();
+    }
+  }
+  */
 }
