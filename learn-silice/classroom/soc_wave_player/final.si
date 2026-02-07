@@ -37,7 +37,7 @@ unit audio(input  uint8 audio_in,output uint4 audio_out)
 {
   uint8 counter = 0;
   uint4 low     = 0;
-  uint4 high    = 1;
+  uint4 high    = 15;
   always {
     uint8 frac  = audio_in;
     audio_out   = counter < frac ? high : low;
@@ -90,12 +90,11 @@ $$end
     oled_dc         :> oled_dc,
   );
   // allocate a BRAM for the display pixels
-  simple_dualport_bram uint8 frame_buffer[$128*128*3$] = uninitialized;
+  simple_dualport_bram uint8 frame_buffer[$128*128$] = uninitialized;
   uint1  fb_enabled  = 0;
   uint14 fb_pixcount = 0;
   uint3  fb_channel  = 3b010;
   uint33 fb_wait     = 1;
-  uint2  rgbsel      = 0;
 
 $$if not SDCARD then
   // for simulation ('fake' inputs/outputs)
@@ -169,9 +168,7 @@ $$end
     display.enable          = fb_enabled & fb_wait[0,1];
     display.data_or_command = 1;
     display.byte            = frame_buffer.rdata0;
-    uint2 channel           = (fb_channel == 3b010 ? 1 : 0)
-                            | (fb_channel == 3b100 ? 2:0);
-    frame_buffer.addr0      = {channel,fb_pixcount};
+    frame_buffer.addr0      = fb_pixcount;
     fb_channel              = (fb_enabled & fb_wait[0,1])
                                            ? {fb_channel[0,2],fb_channel[2,1]}
                                            : fb_channel;
@@ -190,7 +187,6 @@ $$end
     uint1 display_reset_access   = prev_mem_addr[ 2,1];
     uint1 sd_access              = prev_mem_addr[ 5,1];
     uint1 button_access          = prev_mem_addr[ 6,1];
-    uint1 rgbsel_access          = prev_mem_addr[$periph_bit-3$,1];
     uint1 framebuffer_access     = prev_mem_addr[$periph_bit-2$,1];
 	  // ---- memory access CPU <-> BRAM (reads and writes)
     // reads  RAM, peripherals => CPU
@@ -212,11 +208,7 @@ $$end
      & ~framebuffer_access
                                     ) {
       /// LEDs
-      leds           = leds_access   ? prev_wdata[0,8] : leds;
-      rgbsel         = rgbsel_access ? prev_wdata[0,2] : rgbsel;
-      if (rgbsel_access) {
-          __display("RGBSEL = %d",rgbsel);
-      }
+      leds           = leds_access ? prev_wdata[0,8] : leds;
       /// display
       if (display_direct_access) {
         // -> whether to send command or data
@@ -256,8 +248,8 @@ $$end
       // ---- display
       frame_buffer.wenable1 = framebuffer_access;
       fb_enabled            = fb_enabled | framebuffer_access;
-      frame_buffer.addr1    = {rgbsel,prev_mem_addr[0,12],which}; //addr from CPU (32bits)
-      uint8 clr = prev_wdata >> {which,3b0}; // get 8 bit channel value
+      frame_buffer.addr1    = {prev_mem_addr[0,12],which}; //addr from CPU (32bits)
+      uint8 clr   = prev_wdata >> {which,3b0}; // get 8 bit channel value
       frame_buffer.wdata1   = {2b00,clr[2,6]}; // remap to 6 bits per channel
     }
 

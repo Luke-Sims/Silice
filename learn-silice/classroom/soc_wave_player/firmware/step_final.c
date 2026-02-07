@@ -26,7 +26,7 @@ void clear_audio()
     while (addr == (int*)(*AUDIO)) { }
   }
 }
-
+#define BACKGROUND ("/adulthair_meme2.raw")
 #define N_ITEMS 5
 
   const char *items[N_ITEMS] = {
@@ -72,7 +72,7 @@ void main()
     // playing the track
     // -> open the file
     FL_FILE *f = fl_fopen("/music.raw","rb");
-    FL_FILE *f2 = fl_fopen("/adulthair_meme.raw","rb");
+    FL_FILE *f2 = fl_fopen(BACKGROUND,"rb");
     if (f2 == NULL) {
         printf("img.raw not found.\n");
         display_refresh();
@@ -139,7 +139,7 @@ void main()
             *LEDS = leds;
             if (diff_button) {
                 pause = !pause;
-                f2 = fl_fopen("/adulthair_meme.raw","rb");
+                f2 = fl_fopen(BACKGROUND,"rb");
                 fl_fread(display_framebuffer(),1,128*128,f2);
                 display_refresh();
                 fl_fclose(f2);
