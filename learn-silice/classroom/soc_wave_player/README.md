@@ -264,7 +264,9 @@ Want to see/hear the end result? `make final FIRMWARE=step5_audio_stream`
 
 Save the image on the sdcard in a raw pixel format, 256 grayscale 128x128 pixels
 (for instance using Gimp, select grayscale mode, export as raw image data).
-
+- setting img size: `Image->Scale Image` then unchain between Width and Height (Between + and px setting) and set to 128px each.
+- set encoding: `Image->Encoding->8bit-integer`. In the same menu, select `Non-Linear`
+- export as raw: `File->Export as-> select raw in Select File Type -> rename as .raw instead of .data`
 An example is provided in `data/img.raw`.
 
 ### About music files
