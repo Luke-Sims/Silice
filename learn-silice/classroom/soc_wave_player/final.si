@@ -146,15 +146,31 @@ unit main( // main inputs/outputs
 
     // AUDIO
     uint4  volume      = 1;
+    uint1  down_volume = 0;
+    uint1  up_volume   = 0;
     // --- SOC logic, the always block is always active
     always {
+        // ---- check whether the CPU read from or wrote to a peripheral address
+        uint1 peripheral   =  prev_mem_addr[$periph_bit$,1];
+        uint1 peripheral_r =  peripheral & (prev_mem_rw == 4b0); // reading periph.
+        uint1 peripheral_w =  peripheral & (prev_mem_rw != 4b0); // writing periph.
+        uint1 audio_access =  prev_mem_addr[$periph_bit-1$,1];
+        uint1 leds_access            = prev_mem_addr[ 0,1];
+        uint1 display_direct_access  = prev_mem_addr[ 1,1];
+        uint1 display_reset_access   = prev_mem_addr[ 2,1];
+        uint1 sd_access              = prev_mem_addr[ 5,1];
+        uint1 button_access          = prev_mem_addr[ 6,1];
+        uint1 framebuffer_access     = prev_mem_addr[$periph_bit-2$,1];
+        // uint1 volume_access          = prev_mem_addr[ 7,1]; // unused
+
         display.enable     = 0;       // maintain display enable low (pulses on use)
         // ---- hardware audio streaming
         audio_l             = audio.audio_out; // feed output to on-board DAC
         audio_r             = audio.audio_out;
         audio.audio_in      = audio_buffer.rdata0; // feed sample to audio out
-        volume              = btns[5,1] ? volume-1 : volume
-                            | btns[6,1] ? volume+1 : volume; // Increase or lower volume
+        volume              = (down_volume != btns[5,1] & btns[5,1]) ? volume-1 : ((btns[6,1] != up_volume & btns[6,1]) ? volume+1 : volume); // Increase or lower volume
+        down_volume         = (btns[5,1]!=down_volume) ? btns[5,1] : down_volume;
+        up_volume         = (btns[6,1]!=up_volume)   ? btns[6,1] : up_volume;
         audio.volume        = volume;
         audio_buffer_select = audio_buffer_sample[9,1]    // if == 512, done reading
             ? ~audio_buffer_select : audio_buffer_select; // swap buffers
@@ -182,18 +198,7 @@ unit main( // main inputs/outputs
         fb_pixcount             = (fb_enabled & fb_wait[0,1] & fb_channel[0,1])
                                             ? fb_pixcount + 1
                                             : fb_pixcount;
-        // ---- check whether the CPU read from or wrote to a peripheral address
-        uint1 peripheral   =  prev_mem_addr[$periph_bit$,1];
-        uint1 peripheral_r =  peripheral & (prev_mem_rw == 4b0); // reading periph.
-        uint1 peripheral_w =  peripheral & (prev_mem_rw != 4b0); // writing periph.
-        uint1 audio_access =  prev_mem_addr[$periph_bit-1$,1];
-        uint1 leds_access            = prev_mem_addr[ 0,1];
-        uint1 display_direct_access  = prev_mem_addr[ 1,1];
-        uint1 display_reset_access   = prev_mem_addr[ 2,1];
-        uint1 sd_access              = prev_mem_addr[ 5,1];
-        uint1 button_access          = prev_mem_addr[ 6,1];
-        uint1 framebuffer_access     = prev_mem_addr[$periph_bit-2$,1];
-        // uint1 volume_access          = prev_mem_addr[ 7,1]; // unused
+
     	  // ---- memory access CPU <-> BRAM (reads and writes)
         // reads  RAM, peripherals => CPU
         memio.rdata   = // read data is either from memory or SOC peripherals
