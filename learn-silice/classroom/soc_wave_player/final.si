@@ -33,14 +33,14 @@ group mem_io
 // Audio output unit
 // --------------------------------------------------
 
-unit audio(input  uint8 audio_in,output uint4 audio_out)
+unit audio(input  uint8 audio_in,input uint4 volume, output uint4 audio_out)
 {
   uint8 counter = 0;
   uint4 low     = 0;
-  uint4 high    = 15;
+  // uint4 high    = 15;
   always {
     uint8 frac  = audio_in;
-    audio_out   = counter < frac ? high : low;
+    audio_out   = counter < frac ? volume : low;
     counter     = counter + 1;
   }
 }
@@ -151,6 +151,7 @@ $$end
     audio_l             = audio.audio_out; // feed output to on-board DAC
     audio_r             = audio.audio_out;
     audio.audio_in      = audio_buffer.rdata0; // feed sample to audio out
+    audio.volume        = 1; // Set audio volume
     audio_buffer_select = audio_buffer_sample[9,1]    // if == 512, done reading
         ? ~audio_buffer_select : audio_buffer_select; // swap buffers
     audio_buffer.addr0  = audio_buffer_start_raddr         // start addr

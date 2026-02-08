@@ -52,7 +52,7 @@ $$if Solution_STREAM then
 // Audio output unit
 // --------------------------------------------------
 
-unit audio(input  uint8 audio_in,output uint4 audio_out)
+unit audio(input  uint8 audio_in,input uint4 volume, output uint4 audio_out)
 {
 $$if not Solution_PWM then
   always {
@@ -236,6 +236,7 @@ $$if Solution_STREAM then
     audio_l             = audio.audio_out; // feed output to on-board DAC
     audio_r             = audio.audio_out;
     audio.audio_in      = audio_buffer.rdata0; // feed sample to audio out
+    audio.volume        = 1; // Set audio volume
     audio_buffer_select = audio_buffer_sample[9,1]    // if == 512, done reading
         ? ~audio_buffer_select : audio_buffer_select; // swap buffers
     audio_buffer.addr0  = audio_buffer_start_raddr         // start addr
