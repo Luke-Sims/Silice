@@ -168,7 +168,7 @@ unit main( // main inputs/outputs
         audio_l             = audio.audio_out; // feed output to on-board DAC
         audio_r             = audio.audio_out;
         audio.audio_in      = audio_buffer.rdata0; // feed sample to audio out
-        volume              = (down_volume != btns[5,1] & btns[5,1]) ? volume-1 : ((btns[6,1] != up_volume & btns[6,1]) ? volume+1 : volume); // Increase or lower volume
+        volume              = (down_volume != btns[5,1] & btns[5,1]) ? (volume>0 ? volume-1 : 0) : ((btns[6,1] != up_volume & btns[6,1]) ? (volume<15 ? volume+1 : 15) : volume); // Increase or lower volume
         down_volume         = (btns[5,1]!=down_volume) ? btns[5,1] : down_volume;
         up_volume         = (btns[6,1]!=up_volume)   ? btns[6,1] : up_volume;
         audio.volume        = volume;
