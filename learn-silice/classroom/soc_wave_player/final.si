@@ -95,7 +95,7 @@ unit main( // main inputs/outputs
     uint14 fb_pixcount = 0;
     uint3  fb_channel  = 3b010;
     uint33 fb_wait     = 1;
-    uint4  volume      = 1;
+
     $$if not SDCARD then
     // for simulation ('fake' inputs/outputs)
     uint1  sd_clk(0);
@@ -144,6 +144,8 @@ unit main( // main inputs/outputs
     uint4       prev_mem_rw(0);
     uint32      prev_wdata(0);
 
+    // AUDIO
+    uint4  volume      = 1;
     // --- SOC logic, the always block is always active
     always {
         display.enable     = 0;       // maintain display enable low (pulses on use)
@@ -151,7 +153,8 @@ unit main( // main inputs/outputs
         audio_l             = audio.audio_out; // feed output to on-board DAC
         audio_r             = audio.audio_out;
         audio.audio_in      = audio_buffer.rdata0; // feed sample to audio out
-        volume              = btns[5,1] ? (volume>0 ? volume-1 : 0) : (btns[6,1] ? (volume<7 ? volume+1 : 7) : volume); // Increase or lower volume
+        volume              = btns[5,1] ? volume-1 : volume
+                            | btns[6,1] ? volume+1 : volume; // Increase or lower volume
         audio.volume        = volume;
         audio_buffer_select = audio_buffer_sample[9,1]    // if == 512, done reading
             ? ~audio_buffer_select : audio_buffer_select; // swap buffers
@@ -190,7 +193,7 @@ unit main( // main inputs/outputs
         uint1 sd_access              = prev_mem_addr[ 5,1];
         uint1 button_access          = prev_mem_addr[ 6,1];
         uint1 framebuffer_access     = prev_mem_addr[$periph_bit-2$,1];
-        // uint1 volume_access          = prev_mem_addr[ 7,1];
+        // uint1 volume_access          = prev_mem_addr[ 7,1]; // unused
     	  // ---- memory access CPU <-> BRAM (reads and writes)
         // reads  RAM, peripherals => CPU
         memio.rdata   = // read data is either from memory or SOC peripherals
@@ -211,7 +214,7 @@ unit main( // main inputs/outputs
         & ~framebuffer_access
                                         ) {
         /// LEDs
-        leds           = leds_access ? prev_wdata[0,8] : leds;
+        leds           = leds_access ? {2b0,btns[5,1],btns[6,1], volume} : leds;//leds_access ? prev_wdata[0,8] : leds;
         /// display
         if (display_direct_access) {
             // -> whether to send command or data
