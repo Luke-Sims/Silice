@@ -13,4 +13,4 @@ extern volatile int* const AUDIO;
 extern volatile int* const BUTTONS;
 extern volatile int* const RGBSEL;
 extern volatile int* const DISPLAY;
-extern volatile int* const SNDGEN;
+extern volatile int* const VOLUME; // not used
